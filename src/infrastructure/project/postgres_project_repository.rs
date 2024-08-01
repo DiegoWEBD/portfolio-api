@@ -28,7 +28,7 @@ impl ProjectRepository for PostgresProjectRepository {
         Ok(projects)
     }
 
-    async fn add(&self, project: Project) -> Result<Project, std::io::Error> {
+    async fn add(&self, project: &Project) -> Result<Project, std::io::Error> {
         self.db_connection.client.execute("insert into project (name, description) values ({}, {});", &[&project.get_name(), &project.get_description()])
             .await
             .map_err(convert_pg_error)?;
@@ -53,5 +53,23 @@ impl ProjectRepository for PostgresProjectRepository {
         }
 
         Ok(proj.clone())
+    }
+
+    async fn find_by_name(&self, name: &String) -> Result<Option<Project>, std::io::Error> {
+        println!("Finding");
+        let rows = self.db_connection.client.query("select * from project p where p.name = $1;", &[&name])
+            .await
+            .map_err(convert_pg_error)?;
+
+        println!("{:?}", rows);
+
+        match rows.get(0) {
+            Some(row) => {
+                Ok(Some(Project::new(row.get("id"), row.get("name"), row.get("description"))))
+            }
+            None => {
+                Ok(None)
+            }
+        }
     }
 }
