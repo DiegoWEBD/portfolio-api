@@ -3,7 +3,7 @@ mod infrastructure;
 mod presentation;
 mod application;
 
-use std::io::Result;
+use std::{io::Result, sync::Arc};
 use application::{app_state::AppState, project::project_services::ProjectServices};
 use infrastructure::{database::database_connection::DatabaseConnection, project::postgres_project_repository::PostgresProjectRepository};
 use presentation::api::Api;
@@ -22,7 +22,7 @@ async fn main() -> Result<()> {
         }
     }
 
-    let proj_repository: PostgresProjectRepository = PostgresProjectRepository::new(db_connection).await;
+    let proj_repository: PostgresProjectRepository = PostgresProjectRepository::new(Arc::new(db_connection)).await;
     let project_services: ProjectServices = ProjectServices::new(proj_repository);
     let app_data: AppState = AppState::new(project_services);
     let api: Api = Api::new(app_data);

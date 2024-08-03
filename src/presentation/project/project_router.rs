@@ -7,6 +7,7 @@ impl ProjectRouter {
 
     pub fn config(cfg: &mut ServiceConfig) {
         cfg
+            .service(routes::get_project)
             .service(routes::get_projects)
             .service(routes::add_project);
     }

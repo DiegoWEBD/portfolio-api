@@ -1,6 +1,5 @@
-use std::{borrow::Borrow, sync::Arc};
-
-use crate::{domain::project::{project_repository::ProjectRepository, Project}, infrastructure::project::postgres_project_repository::PostgresProjectRepository};
+use std::sync::Arc;
+use crate::{application::errors::AppError, domain::project::{project_repository::ProjectRepository, Project}, infrastructure::project::postgres_project_repository::PostgresProjectRepository};
 
 
 pub struct ProjectServices {
@@ -15,26 +14,31 @@ impl ProjectServices {
         }
     }
 
-    pub async fn get_projects(&self) -> Result<Vec<Project>, std::io::Error> {
+    pub async fn get_project(&self, id: i32) -> Result<Project, AppError> {
+        
+        match self.project_repository.find_by_id(id).await? {
+            Some(found_project) => {
+                Ok(found_project)     
+            }
+            None => {
+                Err(AppError::NotFoundError(format!("Project with id {} doesn't exist.", id)))
+            }
+        }
+    }
+
+    pub async fn get_projects(&self) -> Result<Vec<Project>, AppError> {
         let projects: Vec<Project> = self.project_repository.get_all().await?;
         Ok(projects)
     }
 
-    pub async fn add_project(&self, name: &String, description: &String) -> Result<Project, std::io::Error> {
-        let result: Option<Project> = self.project_repository.find_by_name(name).await?;
-
-        match result {
-            Some(_) => {
-                panic!("Project with the given name already exists.")
-            }
-            None => {
-                println!("Ok")
-            }
+    pub async fn add_project(&self, name: &String, description: &String) -> Result<Project, AppError> {
+        if let Some(_) = self.project_repository.find_by_name(name).await? {
+            return Err(AppError::AlreadyExistsError(format!("Project with name '{}' already exists.", name)));
         }
 
-        let new_project: Project = Project::new(1, name.to_string(), description.to_string());
-        self.project_repository.add(&new_project).await?;
+        let new_project: Project = Project::new(None, name.to_string(), description.to_string());
+        let created_project = self.project_repository.add(new_project).await?;
 
-        Ok(new_project)
+        Ok(created_project)
     }
 }

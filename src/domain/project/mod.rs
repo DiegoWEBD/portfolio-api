@@ -4,14 +4,14 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Project {
-    id: u32,
+    id: Option<i32>,
     name: String,
     description: String
 }
 
 impl Project {
 
-    pub fn new(id: u32, name: String, description: String) -> Self {
+    pub fn new(id: Option<i32>, name: String, description: String) -> Self {
         Project {
             id,
             name,
@@ -20,10 +20,10 @@ impl Project {
     }
 
     pub fn to_string(&self) -> String {
-        format!("id: {}\nname: {}\ndescription: {}", self.id, self.name, self.description)
+        format!("id: {:?}\nname: {}\ndescription: {}", self.id, self.name, self.description)
     }
 
-    pub fn get_id(&self) -> u32 {
+    pub fn get_id(&self) -> Option<i32> {
         self.id
     }
 
@@ -33,5 +33,9 @@ impl Project {
 
     pub fn get_description(&self) -> String {
         self.description.to_string()
+    }
+
+    pub fn set_id(&mut self, id: i32) {
+        self.id = Some(id);
     }
 }
