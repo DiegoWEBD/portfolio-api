@@ -31,12 +31,12 @@ impl ProjectServices {
         Ok(projects)
     }
 
-    pub async fn add_project(&self, name: &String, description: &String) -> Result<Project, AppError> {
+    pub async fn add_project(&self, name: &String, description: &String, image_name: &String) -> Result<Project, AppError> {
         if let Some(_) = self.project_repository.find_by_name(name).await? {
             return Err(AppError::AlreadyExistsError(format!("Project with name '{}' already exists.", name)));
         }
 
-        let new_project: Project = Project::new(None, name.to_string(), description.to_string());
+        let new_project: Project = Project::new(None, name.to_string(), description.to_string(), image_name.to_string());
         let created_project = self.project_repository.add(new_project).await?;
 
         Ok(created_project)

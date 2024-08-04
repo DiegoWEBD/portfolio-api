@@ -6,16 +6,18 @@ use serde::{Serialize, Deserialize};
 pub struct Project {
     id: Option<i32>,
     name: String,
-    description: String
+    description: String,
+    image_name: String
 }
 
 impl Project {
 
-    pub fn new(id: Option<i32>, name: String, description: String) -> Self {
+    pub fn new(id: Option<i32>, name: String, description: String, image_name: String) -> Self {
         Project {
             id,
             name,
-            description
+            description,
+            image_name
         }
     }
 
@@ -33,6 +35,10 @@ impl Project {
 
     pub fn get_description(&self) -> String {
         self.description.to_string()
+    }
+
+    pub fn get_image_name(&self) -> String {
+        self.image_name.to_string()
     }
 
     pub fn set_id(&mut self, id: i32) {

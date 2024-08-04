@@ -30,8 +30,8 @@ async fn get_project(data: Data<AppState>, id: Path<i32>) -> impl Responder {
 #[post("/projects")]
 async fn add_project(data: Data<AppState>, new_project_json: Json<Project>) -> impl Responder {
     let new_project = new_project_json.into_inner();
-    
-    match data.project_services.add_project(&new_project.get_name(), &new_project.get_description()).await {
+
+    match data.project_services.add_project(&new_project.get_name(), &new_project.get_description(), &new_project.get_image_name()).await {
         Ok(created_project) => {
             return HttpResponse::Created().json(created_project);
         } 

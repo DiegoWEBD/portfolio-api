@@ -23,7 +23,7 @@ impl ProjectRepository for PostgresProjectRepository {
             .map_err(convert_pg_error)?;
 
         let projects: Vec<Project> = rows.into_iter().map(|row| {
-            Project::new(row.get("id"), row.get("name"), row.get("description"))
+            Project::new(row.get("id"), row.get("name"), row.get("description"), row.get("image_name"))
         }).collect();
 
         Ok(projects)
@@ -31,7 +31,7 @@ impl ProjectRepository for PostgresProjectRepository {
 
     async fn add(&self, new_project: Project) -> Result<Project, AppError> {
 
-        let row = self.db_connection.client.query_one("insert into project (name, description) values ($1, $2) returning id;", &[&new_project.get_name(), &new_project.get_description()])
+        let row = self.db_connection.client.query_one("insert into project (name, description, image_name) values ($1, $2, $3) returning id;", &[&new_project.get_name(), &new_project.get_description(), &new_project.get_image_name()])
             .await
             .map_err(convert_pg_error)?;
 
@@ -48,7 +48,7 @@ impl ProjectRepository for PostgresProjectRepository {
             .await
             .map_err(convert_pg_error)? {
                 Some(row) => {
-                    Ok(Some(Project::new(row.get("id"), row.get("name"), row.get("description"))))
+                    Ok(Some(Project::new(row.get("id"), row.get("name"), row.get("description"), row.get("image_name"))))
                 }
                 None => {
                     Ok(None)
@@ -62,7 +62,7 @@ impl ProjectRepository for PostgresProjectRepository {
             .await
             .map_err(convert_pg_error)? {
                 Some(row) => {
-                    Ok(Some(Project::new(row.get("id"), row.get("name"), row.get("description"))))
+                    Ok(Some(Project::new(row.get("id"), row.get("name"), row.get("description"), row.get("image_name"))))
                 }
                 None => {
                     Ok(None)
