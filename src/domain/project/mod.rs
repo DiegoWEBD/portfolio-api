@@ -21,10 +21,6 @@ impl Project {
         }
     }
 
-    pub fn to_string(&self) -> String {
-        format!("id: {:?}\nname: {}\ndescription: {}", self.id, self.name, self.description)
-    }
-
     pub fn get_id(&self) -> Option<i32> {
         self.id
     }

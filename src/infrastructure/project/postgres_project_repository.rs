@@ -8,7 +8,7 @@ pub struct PostgresProjectRepository {
 }
 
 impl PostgresProjectRepository {
-    pub async fn new(db_connection: Arc<DatabaseConnection> ) -> Self {
+    pub fn new(db_connection: Arc<DatabaseConnection> ) -> Self {
         PostgresProjectRepository { db_connection }
     }
 }
@@ -22,9 +22,11 @@ impl ProjectRepository for PostgresProjectRepository {
             .await
             .map_err(convert_pg_error)?;
 
-        let projects: Vec<Project> = rows.into_iter().map(|row| {
-            Project::new(row.get("id"), row.get("name"), row.get("description"), row.get("image_name"))
-        }).collect();
+        let projects: Vec<Project> = rows.into_iter()
+            .map(|row| {
+                Project::new(row.get("id"), row.get("name"), row.get("description"), row.get("image_name"))
+            })
+            .collect();
 
         Ok(projects)
     }
